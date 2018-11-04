@@ -12,24 +12,19 @@ declare(strict_types=1);
 
 namespace Contao\TcpdfBundle\EventListener;
 
+use Contao\Config;
 use Contao\ModuleArticle;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Contao\StringUtil;
 
 class PrintArticleAsPdfListener
 {
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
     /**
      * @var string
      */
     private $rootDir;
 
-    public function __construct(RequestStack $requestStack, string $rootDir)
+    public function __construct(string $rootDir)
     {
-        $this->requestStack = $requestStack;
         $this->rootDir = $rootDir;
     }
 
@@ -76,11 +71,12 @@ class PrintArticleAsPdfListener
 
         // TCPDF configuration
         $l['a_meta_dir'] = 'ltr';
-        $l['a_meta_charset'] = \Config::get('characterSet');
+        $l['a_meta_charset'] = Config::get('characterSet');
         $l['a_meta_language'] = substr($GLOBALS['TL_LANGUAGE'], 0, 2);
         $l['w_page'] = 'page';
 
-        $this->defineTcpdfConstants();
+        // Include the config file
+        include_once $this->rootDir.'/system/config/tcpdf.php';
 
         // Create new PDF document
         $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true);
@@ -122,59 +118,9 @@ class PrintArticleAsPdfListener
 
         // Close and output PDF document
         $pdf->lastPage();
-        $pdf->Output(\StringUtil::standardize(ampersand($module->title, false)).'.pdf', 'D');
+        $pdf->Output(StringUtil::standardize(preg_replace('/&(amp;)?/i', '&', $module->title)).'.pdf', 'D');
 
         // Stop script execution
         exit;
-    }
-
-    private function defineTcpdfConstants(): void
-    {
-        if (\defined('K_TCPDF_EXTERNAL_CONFIG')) {
-            return;
-        }
-
-        if (!$request = $this->requestStack->getCurrentRequest()) {
-            throw new \RuntimeException('The request stack did not contain a request');
-        }
-
-        $baseUrl = $request->getHttpHost().$request->getBasePath();
-
-        \define('K_TCPDF_EXTERNAL_CONFIG', true);
-        \define('K_PATH_MAIN', $this->rootDir.'/vendor/tecnickcom/tcpdf/');
-        \define('K_PATH_URL', $baseUrl.'vendor/tecnickcom/tcpdf/');
-        \define('K_PATH_FONTS', K_PATH_MAIN.'fonts/');
-        \define('K_PATH_CACHE', $this->rootDir.'/system/tmp/');
-        \define('K_PATH_URL_CACHE', TL_ROOT.'/system/tmp/');
-        \define('K_PATH_IMAGES', K_PATH_MAIN.'images/');
-        \define('K_BLANK_IMAGE', K_PATH_IMAGES.'_blank.png');
-        \define('PDF_PAGE_FORMAT', 'A4');
-        \define('PDF_PAGE_ORIENTATION', 'P');
-        \define('PDF_CREATOR', 'Contao Open Source CMS');
-        \define('PDF_AUTHOR', $baseUrl);
-        \define('PDF_HEADER_TITLE', '');
-        \define('PDF_HEADER_STRING', '');
-        \define('PDF_HEADER_LOGO', '');
-        \define('PDF_HEADER_LOGO_WIDTH', 30);
-        \define('PDF_UNIT', 'mm');
-        \define('PDF_MARGIN_HEADER', 0);
-        \define('PDF_MARGIN_FOOTER', 0);
-        \define('PDF_MARGIN_TOP', 10);
-        \define('PDF_MARGIN_BOTTOM', 10);
-        \define('PDF_MARGIN_LEFT', 15);
-        \define('PDF_MARGIN_RIGHT', 15);
-        \define('PDF_FONT_NAME_MAIN', 'freeserif');
-        \define('PDF_FONT_SIZE_MAIN', 12);
-        \define('PDF_FONT_NAME_DATA', 'freeserif');
-        \define('PDF_FONT_SIZE_DATA', 12);
-        \define('PDF_FONT_MONOSPACED', 'freemono');
-        \define('PDF_FONT_SIZE_MONOSPACED', 10); // PATCH
-        \define('PDF_IMAGE_SCALE_RATIO', 1.25);
-        \define('HEAD_MAGNIFICATION', 1.1);
-        \define('K_CELL_HEIGHT_RATIO', 1.25);
-        \define('K_TITLE_MAGNIFICATION', 1.3);
-        \define('K_SMALL_RATIO', 2 / 3);
-        \define('K_THAI_TOPCHARS', false);
-        \define('K_TCPDF_CALLS_IN_HTML', false);
     }
 }
