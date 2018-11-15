@@ -1,4 +1,9 @@
 services:
+    contao_tcpdf.listener.generate_symlinks:
+        class: Contao\TcpdfBundle\EventListener\GenerateSymlinksListener
+        tags:
+        - { name: kernel.event_listener, event: contao.generate_symlinks, method: onGenerateSymlinks }
+
     contao_tcpdf.listener.print_article_as_pdf:
         class: Contao\TcpdfBundle\EventListener\PrintArticleAsPdfListener
         arguments:
