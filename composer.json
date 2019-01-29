@@ -12,10 +12,10 @@
     "require": {
         "php": "^7.1",
         "contao/core-bundle": "^4.7",
-        "symfony/config": "3.4.* || 4.1.*",
-        "symfony/dependency-injection": "3.4.* || 4.1.*",
-        "symfony/http-kernel": "3.4.* || 4.1.*",
-        "symfony/yaml": "3.4.* || 4.1.*",
+        "symfony/config": "3.4.* || ^4.1",
+        "symfony/dependency-injection": "3.4.* || ^4.1",
+        "symfony/http-kernel": "3.4.* || ^4.1",
+        "symfony/yaml": "3.4.* || ^4.1",
         "tecnickcom/tcpdf": "^6.2.22"
     },
     "conflict": {
