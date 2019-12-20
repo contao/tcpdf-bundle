@@ -50,6 +50,8 @@ class PrintArticleAsPdfListener
 
         // Default PDF export using TCPDF
         $search = [
+            '@<form.*</form>@Us',
+            '@<a [^>]*href="[^"]*javascript:[^>]+>.*</a>@Us',
             '@<span style="text-decoration: ?underline;?">(.*)</span>@Us',
             '@(<img[^>]+>)@',
             '@(<div[^>]+block[^>]+>)@',
@@ -59,6 +61,8 @@ class PrintArticleAsPdfListener
         ];
 
         $replace = [
+            '',
+            '',
             '<u>$1</u>',
             '<br>$1',
             '<br>$1',
