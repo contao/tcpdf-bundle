@@ -22,7 +22,7 @@ namespace Contao;
 \define('PDF_PAGE_ORIENTATION', 'P');
 \define('PDF_CREATOR', 'Contao Open Source CMS');
 \define('PDF_AUTHOR', Environment::get('url'));
-\define('PDF_HEADER_TITLE', $GLOBALS['TL_CONFIG']['websiteTitle']);
+\define('PDF_HEADER_TITLE', $GLOBALS['TL_CONFIG']['websiteTitle'] ?? '');
 \define('PDF_HEADER_STRING', '');
 \define('PDF_HEADER_LOGO', '');
 \define('PDF_HEADER_LOGO_WIDTH', 30);
